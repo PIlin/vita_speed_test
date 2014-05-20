@@ -1,0 +1,4 @@
+vita_speed_test/bin/
+vita_speed_test/obj/
+*.pidb
+*.userprefs
