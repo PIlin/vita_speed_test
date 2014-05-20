@@ -97,8 +97,36 @@ namespace vita_speed_test {
 				tex.Dispose();
 				tex = null;
 			}
+		}
+		
+		public static void TestTexture2DGenerateMipsTime() {
+			int count = 12;
+			int w, h;
+			w = h = 1 << (count - 1);
 			
+			mLastTest = "TestTexture2DGenerateMipsTime\n" +
+				"TL0 size is " + w + "\n";
 			
+			var prf = new sProfiler();
+			
+			for (int i = 0; i < count; ++i) {
+				w = h = 1 << (count - 1 - i);
+				var tex = new Texture2D(w, h, true, PixelFormat.Rgba);
+			
+				byte[] data = new byte[w * h * 4];
+			
+				eScope sc = (eScope)(i + (int)eScope.TL0);
+			
+				tex.SetPixels(0, data);
+				
+				prf.Start(sc);
+				tex.GenerateMipmap();
+				prf.Stop();
+			
+				data = null;
+				tex.Dispose();
+				tex = null;
+			}
 		}
 		
 		#endregion
@@ -116,6 +144,8 @@ namespace vita_speed_test {
 				DoTest(() => TestTexture2DSetPixelsTime(mSetPixelsTestLevelCount));
 			} else if (gamePadData.ButtonsUp.HasFlag(GamePadButtons.Triangle)) {
 				DoTest(() => TestTexture2DSetPixelsNoMipsTime());
+			} else if (gamePadData.ButtonsUp.HasFlag(GamePadButtons.Start)) {
+				DoTest(() => TestTexture2DGenerateMipsTime());
 			} else if (gamePadData.ButtonsUp.HasFlag(GamePadButtons.Up)) {
 				AddLevelCountForSetPixelsTest(1);
 			} else if (gamePadData.ButtonsUp.HasFlag(GamePadButtons.Down)) {
@@ -180,6 +210,7 @@ namespace vita_speed_test {
 				"square: \tTestTexture2DInitTime without mips\n" + 
 				"circle: \tTestTexture2DSetPixelsTime with mips\n" + 
 				"triangle: TestTexture2DSetPixelsNoMipsTime\n" + 
+				"start: TestTexture2DGenerateMipsTime\n" +
 				"up: \tincrease TestTexture2DSetPixelsTime level count\n" + 
 				"down: \tdecrease TestTexture2DSetPixelsTime level count\n";
 			myScene.RootWidget.AddChildLast(mLabel);
@@ -199,5 +230,4 @@ namespace vita_speed_test {
 		}
 		
 	}
-
 }
